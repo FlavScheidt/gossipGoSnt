@@ -6,14 +6,14 @@ import (
     // "flag"
     "fmt"
     "os"
-    "os/signal"
-    "syscall"
+    // "os/signal"
+    // "syscall"
     "time"
 
     "github.com/libp2p/go-libp2p"
     "github.com/libp2p/go-libp2p-core/host"
     "github.com/libp2p/go-libp2p-core/network"
-    // "github.com/libp2p/go-libp2p-core/peer"
+    "github.com/libp2p/go-libp2p-core/peer"
     // "github.com/libp2p/go-libp2p-discovery"
     "github.com/multiformats/go-multiaddr"
 
@@ -24,7 +24,7 @@ import (
     mrand "math/rand"
 
     "github.com/libp2p/go-libp2p-core/crypto"
-    // "github.com/libp2p/go-libp2p-core/peerstore"
+    "github.com/libp2p/go-libp2p-core/peerstore"
 
 )
 
@@ -65,6 +65,30 @@ func writeData(rw *bufio.ReadWriter) {
 // const protocolID = "/xrpl/1.0.0"
 // const discoveryNamespace = "xrpl"
 
+func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHandler) {
+    // Set a function as stream handler.
+    // This function is called when a peer connects, and starts a stream with this protocol.
+    // Only applies on the receiving side.
+    h.SetStreamHandler("/xrpl/1.0.0", streamHandler)
+
+    // Let's get the actual TCP port from our listen multiaddr, in case we're using 0 (default; random available port).
+    var port string
+    for _, la := range h.Network().ListenAddresses() {
+        if p, err := la.ValueForProtocol(multiaddr.P_TCP); err == nil {
+            port = p
+            break
+        }
+    }
+
+    if port == "" {
+        log.Println("was not able to find actual local port")
+        return
+    }
+
+    log.Println("Waiting for incoming connection")
+    log.Println()
+}
+
 func handleStream(s network.Stream) {
     log.Println("Got a new stream!")
 
@@ -100,54 +124,57 @@ func makeHost(port int, seed io.Reader) (host.Host, error) {
     )
 }
 
-func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHandler) {
-    // Set a function as stream handler.
-    // This function is called when a peer connects, and starts a stream with this protocol.
-    // Only applies on the receiving side.
-    h.SetStreamHandler("/xrpl/1.0.0", streamHandler)
 
-    // Let's get the actual TCP port from our listen multiaddr, in case we're using 0 (default; random available port).
-    var port string
-    for _, la := range h.Network().ListenAddresses() {
-        if p, err := la.ValueForProtocol(multiaddr.P_TCP); err == nil {
-            port = p
-            break
-        }
+func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (*bufio.ReadWriter, error) {
+    log.Println("This node's multiaddresses:")
+    for _, la := range h.Addrs() {
+        log.Printf(" - %v\n", la)
     }
-
-    if port == "" {
-        log.Println("was not able to find actual local port")
-        return
-    }
-
-    log.Printf("Run './chat -d /ip4/127.0.0.1/tcp/%v/p2p/%s' on another console.\n", port, h.ID().Pretty())
-    log.Println("You can replace 127.0.0.1 with public IP as well.")
-    log.Println("Waiting for incoming connection")
     log.Println()
+
+    // Turn the destination into a multiaddr.
+    maddr, err := multiaddr.NewMultiaddr(destination)
+    if err != nil {
+        log.Println(err)
+        return nil, err
+    }
+
+    // Extract the peer ID from the multiaddr.
+    info, err := peer.AddrInfoFromP2pAddr(maddr)
+    if err != nil {
+        log.Println(err)
+        return nil, err
+    }
+
+    // Add the destination's peer multiaddress in the peerstore.
+    // This will be used during connection and stream creation by libp2p.
+    h.Peerstore().AddAddrs(info.ID, info.Addrs, peerstore.PermanentAddrTTL)
+
+    // Start a stream with the destination.
+    // Multiaddress of the destination peer is fetched from the peerstore using 'peerId'.
+    s, err := h.NewStream(context.Background(), info.ID, "/xrpl/1.0.0")
+    if err != nil {
+        log.Println(err)
+        return nil, err
+    }
+    log.Println("Established connection to destination")
+
+    // Create a buffered stream so that read and writes are non blocking.
+    rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
+
+    return rw, nil
 }
 
 
 func main() {
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel()
-    // Add -peer-address flag
-    // peerAddr := flag.String("peer-address", "", "peer address")
-    // flag.Parse()
 
-    // Create the libp2p host.
-    //
-    // Note that we are explicitly passing the listen address and restricting it to IPv4 over the
-    // loopback interface (127.0.0.1).
-    //
     // Setting the TCP port as 0 makes libp2p choose an available port for us.
     // You could, of course, specify one if you like.
     sourcePort := 45511
-    nodeIDMachine := 118
-    // host, err := libp2p.New(libp2p.ListenAddrStrings("/ip4/127.0.0.1/tcp/0"), libp2p.Identity())
-    // if err != nil {
-    //     panic(err)
-    // }
-    // defer host.Close()
+    nodeIDMachine := 220
+
     var r io.Reader
 
 
@@ -165,72 +192,25 @@ func main() {
     fmt.Println("Addresses:", host.Addrs())
     fmt.Println("ID:", host.ID())
 
-    // // Setup a stream handler.
-    // //
-    // // This gets called every time a peer connects and opens a stream to this node.
-    // host.SetStreamHandler(protocolID, func(s network.Stream) {
-    //     go writeCounter(s)
-    //     go readCounter(s)
-    // })
+    peerAddr := "/ip4/191.168.20.19/tcp/45511/p2p/12D3KooWLr6FwuGrFpQj6VhWjvFpehsrk1yZpud6AVU9QmQ2LdNV"
 
-    // // Setup peer discovery.
-    // // discoveryService, err := discovery.NewMdnsService(
-    // //     context.Background(),
-    // //     host,
-    // //     time.Second,
-    // //     discoveryNamespace,
-    // // )
-    // // if err != nil {
-    // //     panic(err)
-    // // }
-    // // defer discoveryService.Close()
+    rw, err := startPeerAndConnect(ctx, host, peerAddr)
+    if err != nil {
+        startPeer(ctx, host, handleStream)
+        // log.Println(err)
+        // return
+    } else {
+        // Create a thread to read and write data.
+        go writeData(rw)
+        go readData(rw)
+    }
 
-    // discoveryService.RegisterNotifee(&discoveryNotifee{h: host})
-    // peerAddr := "/ip4/127.0.0.1/tcp/45511/p2p/QmV6ghu9qyFgPayduw4yyqkc5BhEpSKaVhfKBJBoHCKszF"
-    // peerAddr := "/ip4/127.0.0.1/tcp/45511/p2p/QmbaWk5MHavvC7bMZ1afYWPLjus5vgG7gN8wuvwy6GoFf4"
+    // Wait forever
+    select {}
 
-    // If we received a peer address, we should connect to it.
-    // if peerAddr != "" {
-    //     // Parse the multiaddr string.
-    //     peerMA, err := multiaddr.NewMultiaddr(peerAddr)
-    //     if err != nil {
-    //         panic(err)
-    //     }
-    //     peerAddrInfo, err := peer.AddrInfoFromP2pAddr(peerMA)
-    //     if err != nil {
-    //         panic(err)
-    //     }
-
-    //     // Connect to the node at the given address.
-    //     if err := host.Connect(context.Background(), *peerAddrInfo); err != nil {
-    //         panic(err)
-    //     }
-    //     fmt.Println("Connected to", peerAddrInfo.String())
-
-    //     // Open a stream with the given peer.
-    //     s, err := host.NewStream(context.Background(), peerAddrInfo.ID, protocolID)
-    //     if err != nil {
-    //         panic(err)
-    //     }
-
-
-    // if *dest == "" {
-    startPeer(ctx, host, handleStream)
-    // } else {
-    //     rw, err := startPeerAndConnect(ctx, h, *dest)
-    //     if err != nil {
-    //         log.Println(err)
-    //         return
-    //     }
-
-        // Start the write and read threads.
-        // go writeCounter(s)
-        // go readCounter(s)
-    // }
-
-    sigCh := make(chan os.Signal)
-    signal.Notify(sigCh, syscall.SIGKILL, syscall.SIGINT)
-    <-sigCh
+    // sigCh := make(chan os.Signal)
+    // signal.Notify(sigCh, syscall.SIGKILL, syscall.SIGINT)
+    // <-sigCh
 }
 
 func writeCounter(s network.Stream) {
