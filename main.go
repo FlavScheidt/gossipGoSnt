@@ -75,8 +75,11 @@ func handleStream(s network.Stream) {
 
 
 func makeHost(port int, seed io.Reader) (host.Host, error) {
-    // Creates a new RSA key pair for this host.
-    prvKey, _, err := crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, seed)
+    // Creates a new ED25519 key pair for this host.
+    // Using ed25519 instead of RSA because RSA implementation in go prevents deterministic behavior
+    // We need deterministic behavior, since it is a test enviroment
+    // REMEMBER TO USE RSA WITH A RANDOM SEED IN PRODUCTION
+    prvKey, _, err := crypto.GenerateKeyPairWithReader(crypto.Ed25519, 2048, seed)
     if err != nil {
         log.Println(err)
         return nil, err
@@ -179,7 +182,7 @@ func main() {
     // // defer discoveryService.Close()
 
     // discoveryService.RegisterNotifee(&discoveryNotifee{h: host})
-    peerAddr := "/ip4/127.0.0.1/tcp/45511/p2p/QmV6ghu9qyFgPayduw4yyqkc5BhEpSKaVhfKBJBoHCKszF"
+    // peerAddr := "/ip4/127.0.0.1/tcp/45511/p2p/QmV6ghu9qyFgPayduw4yyqkc5BhEpSKaVhfKBJBoHCKszF"
     // peerAddr := "/ip4/127.0.0.1/tcp/45511/p2p/QmbaWk5MHavvC7bMZ1afYWPLjus5vgG7gN8wuvwy6GoFf4"
 
     // If we received a peer address, we should connect to it.
