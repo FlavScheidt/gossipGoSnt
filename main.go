@@ -29,6 +29,7 @@ import (
 )
 
 //lotus 12D3KooWBPuBLDxznaw27fk9k9dt2Vp2MSGodUNBz3tP557iWmtQ
+//caterham 12D3KooWLr6FwuGrFpQj6VhWjvFpehsrk1yZpud6AVU9QmQ2LdNV
 
 func readData(rw *bufio.ReadWriter) {
     for {
@@ -141,7 +142,7 @@ func main() {
     // Setting the TCP port as 0 makes libp2p choose an available port for us.
     // You could, of course, specify one if you like.
     sourcePort := 45511
-    nodeIDMachine := 220
+    nodeIDMachine := 118
     // host, err := libp2p.New(libp2p.ListenAddrStrings("/ip4/127.0.0.1/tcp/0"), libp2p.Identity())
     // if err != nil {
     //     panic(err)
