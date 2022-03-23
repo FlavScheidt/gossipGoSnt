@@ -25,6 +25,7 @@ import (
 
     "github.com/libp2p/go-libp2p-core/crypto"
     "github.com/libp2p/go-libp2p-core/peerstore"
+    pubsub "github.com/libp2p/go-libp2p-pubsub"
 
 )
 
@@ -65,6 +66,9 @@ func writeData(rw *bufio.ReadWriter) {
 // const protocolID = "/xrpl/1.0.0"
 // const discoveryNamespace = "xrpl"
 
+//Start peer and wait for icoming connections
+//We are not veirfying if the node is on the list or not because we are using a controled test environment
+//  This environment has programmed tasks to guarantee that everything will go accordinly
 func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHandler) {
     // Set a function as stream handler.
     // This function is called when a peer connects, and starts a stream with this protocol.
@@ -89,6 +93,7 @@ func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHan
     log.Println()
 }
 
+//Habndle streams after receiving an incoming transmission
 func handleStream(s network.Stream) {
     log.Println("Got a new stream!")
 
@@ -101,7 +106,7 @@ func handleStream(s network.Stream) {
     // stream 's' will stay open until you close it (or the other side closes it).
 }
 
-
+//Creates the libp2p layer
 func makeHost(port int, seed io.Reader) (host.Host, error) {
     // Creates a new ED25519 key pair for this host.
     // Using ed25519 instead of RSA because RSA implementation in go prevents deterministic behavior
@@ -124,7 +129,7 @@ func makeHost(port int, seed io.Reader) (host.Host, error) {
     )
 }
 
-
+//Start peert and connect to the list =)
 func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (*bufio.ReadWriter, error) {
     log.Println("This node's multiaddresses:")
     for _, la := range h.Addrs() {
@@ -173,10 +178,9 @@ func main() {
     // Setting the TCP port as 0 makes libp2p choose an available port for us.
     // You could, of course, specify one if you like.
     sourcePort := 45511
-    nodeIDMachine := 220
+    nodeIDMachine := 118
 
     var r io.Reader
-
 
     //Use the name of the node to derive the key. Always derive the same key
     r = mrand.New(mrand.NewSource(int64(nodeIDMachine)))
@@ -192,7 +196,7 @@ func main() {
     fmt.Println("Addresses:", host.Addrs())
     fmt.Println("ID:", host.ID())
 
-    peerAddr := "/ip4/191.168.20.19/tcp/45511/p2p/12D3KooWLr6FwuGrFpQj6VhWjvFpehsrk1yZpud6AVU9QmQ2LdNV"
+    peerAddr := "/ip4/192.168.20.53/tcp/45511/p2p/12D3KooWBPuBLDxznaw27fk9k9dt2Vp2MSGodUNBz3tP557iWmtQ"
 
     rw, err := startPeerAndConnect(ctx, host, peerAddr)
     if err != nil {
@@ -203,6 +207,12 @@ func main() {
         // Create a thread to read and write data.
         go writeData(rw)
         go readData(rw)
+    }
+
+    // create a new PubSub service using the GossipSub router
+    ps, err := pubsub.NewGossipSub(ctx, host)
+    if err != nil {
+        panic(err)
     }
 
     // Wait forever
