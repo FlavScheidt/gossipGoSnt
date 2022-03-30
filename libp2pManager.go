@@ -2,30 +2,19 @@ package main
 
 import (
     "context"
-    // "encoding/binary"
-    // "flag"
     "fmt"
     "os"
-    // "os/signal"
-    // "syscall"
-    // "time"
+    "bufio"
+    "io"
+    "log"
 
     "github.com/libp2p/go-libp2p"
     "github.com/libp2p/go-libp2p-core/host"
     "github.com/libp2p/go-libp2p-core/network"
     "github.com/libp2p/go-libp2p-core/peer"
-    // "github.com/libp2p/go-libp2p-discovery"
     "github.com/multiformats/go-multiaddr"
-
-    // "crypto/rand"
-    "bufio"
-    "io"
-    "log"
-    // mrand "math/rand"
-
     "github.com/libp2p/go-libp2p-core/crypto"
     "github.com/libp2p/go-libp2p-core/peerstore"
-    // pubsub "github.com/libp2p/go-libp2p-pubsub"
 
 )
 
@@ -86,7 +75,7 @@ func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHan
         return
     }
 
-    log.Println("No one online... Waiting for incoming connection")
+    log.Println("Waiting for incoming connections")
     log.Println()
 }
 
