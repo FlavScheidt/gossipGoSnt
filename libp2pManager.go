@@ -7,6 +7,7 @@ import (
     "bufio"
     "io"
     "log"
+    "time"
 
     "github.com/libp2p/go-libp2p"
     "github.com/libp2p/go-libp2p-core/host"
@@ -16,8 +17,46 @@ import (
     "github.com/libp2p/go-libp2p-core/crypto"
     "github.com/libp2p/go-libp2p-core/peerstore"
 
+    "github.com/libp2p/go-libp2p/p2p/discovery/mdns"
+
 )
 
+// -----------------------------------------
+//      General
+// -----------------------------------------
+// shortID returns the last 8 chars of a base58-encoded peer id.
+func shortID(p peer.ID) string {
+	pretty := p.Pretty()
+	return pretty[len(pretty)-8:]
+}
+
+//Creates the libp2p layer
+func makeHost(port int, seed io.Reader) (host.Host, error) {
+    // Creates a new ED25519 key pair for this host.
+    // Using ed25519 instead of RSA because RSA implementation in go prevents deterministic behavior
+    // We need deterministic behavior, since it is a test enviroment
+    // REMEMBER TO USE RSA WITH A RANDOM SEED IN PRODUCTION
+    prvKey, _, err := crypto.GenerateKeyPairWithReader(crypto.Ed25519, 2048, seed)
+    if err != nil {
+        log.Println(err)
+        return nil, err
+    }
+
+    // 0.0.0.0 will listen on any interface device.
+    sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/0.0.0.0/tcp/%d", port))
+
+    // libp2p.New constructs a new libp2p Host.
+    // Other options can be added here.
+    return libp2p.New(
+        libp2p.ListenAddrs(sourceMultiAddr),
+        libp2p.Identity(prvKey),
+    )
+}
+
+// -----------------------------------------
+//      Static discovery
+//			Connect to peers on the list
+// -----------------------------------------
 func readData(rw *bufio.ReadWriter) {
     for {
         str, _ := rw.ReadString('\n')
@@ -49,8 +88,6 @@ func writeData(rw *bufio.ReadWriter) {
         rw.Flush()
     }
 }
-// const protocolID = "/xrpl/1.0.0"
-// const discoveryNamespace = "xrpl"
 
 //Start peer and wait for icoming connections
 //We are not veirfying if the node is on the list or not because we are using a controled test environment
@@ -92,28 +129,6 @@ func handleStream(s network.Stream) {
     // stream 's' will stay open until you close it (or the other side closes it).
 }
 
-//Creates the libp2p layer
-func makeHost(port int, seed io.Reader) (host.Host, error) {
-    // Creates a new ED25519 key pair for this host.
-    // Using ed25519 instead of RSA because RSA implementation in go prevents deterministic behavior
-    // We need deterministic behavior, since it is a test enviroment
-    // REMEMBER TO USE RSA WITH A RANDOM SEED IN PRODUCTION
-    prvKey, _, err := crypto.GenerateKeyPairWithReader(crypto.Ed25519, 2048, seed)
-    if err != nil {
-        log.Println(err)
-        return nil, err
-    }
-
-    // 0.0.0.0 will listen on any interface device.
-    sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/0.0.0.0/tcp/%d", port))
-
-    // libp2p.New constructs a new libp2p Host.
-    // Other options can be added here.
-    return libp2p.New(
-        libp2p.ListenAddrs(sourceMultiAddr),
-        libp2p.Identity(prvKey),
-    )
-}
 
 //Start peert and connect to the list =)
 func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (*bufio.ReadWriter, error) {
@@ -154,4 +169,37 @@ func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (
     rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
 
     return rw, nil
+}
+
+
+// -----------------------------------------
+//      mDNS discovery
+// -----------------------------------------
+// DiscoveryInterval is how often we re-publish our mDNS records.
+const DiscoveryInterval = time.Hour
+// DiscoveryServiceTag is used in our mDNS advertisements to discover other chat peers.
+const DiscoveryServiceTag = "xrpl"
+
+// discoveryNotifee gets notified when we find a new peer via mDNS discovery
+type discoveryNotifee struct {
+	h host.Host
+}
+
+// HandlePeerFound connects to peers discovered via mDNS. Once they're connected,
+// the PubSub system will automatically start interacting with them if they also
+// support PubSub.
+func (n *discoveryNotifee) HandlePeerFound(pi peer.AddrInfo) {
+	fmt.Printf("discovered new peer %s\n", pi.ID.Pretty())
+	err := n.h.Connect(context.Background(), pi)
+	if err != nil {
+		fmt.Printf("error connecting to peer %s: %s\n", pi.ID.Pretty(), err)
+	}
+}
+
+// setupDiscovery creates an mDNS discovery service and attaches it to the libp2p Host.
+// This lets us automatically discover peers on the same LAN and connect to them.
+func setupDiscovery(h host.Host) error {
+	// setup mDNS discovery to find local peers
+	s := mdns.NewMdnsService(h, DiscoveryServiceTag, &discoveryNotifee{h: h})
+	return s.Start()
 }
