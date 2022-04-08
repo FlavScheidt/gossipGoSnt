@@ -37,7 +37,7 @@ type Topic struct {
 
 type Message struct {
     Message         []byte
-    Validator_Key   []byte
+    Validator_Key   string
     Hash            string
     // SenderID        string
     // SenderName      string
@@ -77,7 +77,7 @@ func Subscribe(ctx context.Context, ps *pubsub.PubSub, gRPCclient pb.GossipMessa
 }
 
 // Publish sends a message to the pubsub topic.
-func (cr *Topic) Publish(message []byte, validatorKey []byte, hash string) error {
+func (cr *Topic) Publish(message []byte, validatorKey string, hash string) error {
     m := Message{
         Message:        message,
         Validator_Key:  validatorKey,
@@ -117,6 +117,9 @@ func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
         // send valid messages onto the Messages channel
         cr.Messages <- cm
         m := <-cr.Messages
+        // Log format is "time | handler | received/sent | orign/destination | data"
+        log.Println("___________________________________________")
+        log.Printf("| GossipSub | Recieved | GossipSub | %v | %v \n", m.Hash, m.Validator_Key)
 
         //Send to rippled
         response, err := gRPCclient.ToRippled(cr.ctx, &pb.Gossip{Message: m.Message, Validator_Key: m.Validator_Key, Hash: m.Hash})
@@ -124,6 +127,9 @@ func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
             log.Fatalf("Error when calling ToRippled: %s", err)
         }
         // Log format is "time | handler | received/sent | orign/destination | data"
+                // Log format is "time | handler | received/sent | orign/destination | data"
+        log.Println("___________________________________________")
+        log.Printf("| gRPC-Client | Sent | Rippled | %v | %v \n", m.Hash, m.Validator_Key)
         log.Println("___________________________________________")
         log.Printf("| gRPC-Client | Sent | Rippled | %v | %v \n", m.Hash, m.Validator_Key)
         log.Printf("Response from server: %s", response.Stream)

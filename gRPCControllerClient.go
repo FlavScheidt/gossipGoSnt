@@ -31,12 +31,12 @@ func gRPCclientConnection() (pb.GossipMessageClient){
 }
 
 
-func gRPCclientSend(message []byte, validatorKey []byte, clientStub pb.GossipMessageClient) {
+func gRPCclientSend(message []byte, validatorKey string, hash string, clientStub pb.GossipMessageClient) {
    
     // Contact the server and print out its response.
     ctx, cancel := context.WithTimeout(context.Background(), time.Second)
     defer cancel()
-    r, err := clientStub.ToRippled(ctx, &pb.Gossip{Message: message, Validator_Key: validatorKey})
+    r, err := clientStub.ToRippled(ctx, &pb.Gossip{Message: message, Validator_Key: validatorKey, Hash: hash})
     log.Println("gRPC-Client | Message from GSub node ID: " + string(validatorKey) + " sent to rippled server");
     if err != nil {
         log.Fatalf("could not send message: %v", err)
