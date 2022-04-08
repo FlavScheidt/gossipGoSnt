@@ -121,10 +121,10 @@ func handleStream(s network.Stream) {
     log.Println("Got a new stream!")
 
     // Create a buffer stream for non blocking read and write.
-    rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
+    // rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
 
-    go readData(rw)
-    go writeData(rw)
+    // go readData(rw)
+    // go writeData(rw)
 
     // stream 's' will stay open until you close it (or the other side closes it).
 }
