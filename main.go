@@ -9,6 +9,8 @@ import (
     "io/ioutil"
     "strings"
     mrand "math/rand"
+    // "log/syslog"
+    "os"
 
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
@@ -27,12 +29,26 @@ const sourcePort = 45511 //for libp2p
 var nodeTopic *Topic
 
 func main() {
+
+    // -----------------------------------------
+    //      Set log file
+    // -----------------------------------------
+    LOG_FILE := "./log.out"
+    // open log file
+    logFile, err := os.OpenFile(LOG_FILE, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0644)
+    if err != nil {
+        log.Panic(err)
+    }
+    defer logFile.Close()
+
+    // Set log out put and enjoy :)
+    log.SetOutput(logFile)
+
     // -----------------------------------------
     //      Create Context
     // -----------------------------------------
     ctx := context.Background()
     log.Println("Starting...")
-
 
     // -----------------------------------------
     //      Get the command line arguments
