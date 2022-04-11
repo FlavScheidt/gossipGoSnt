@@ -41,8 +41,8 @@ func main() {
     }
     defer logFile.Close()
 
-    // Set log out put and enjoy :)
-    log.SetOutput(logFile)
+    mw := io.MultiWriter(os.Stdout, logFile)
+    log.SetOutput(mw)
 
     // -----------------------------------------
     //      Create Context
@@ -55,9 +55,10 @@ func main() {
     //          We need to know which kind of experiment to run
     //          Here we just verify if the arguments are correct
     // -----------------------------------------
-    experimentType := flag.String("type", "general", "Type of experiment. Default is general, which mean one topic for everyone")
+    experimentType := flag.String("type", "", "Type of experiment. Default is empty, shuts down")
     flag.Parse()
 
+    log.Println(strings.ToLower(*experimentType))
     switch strings.ToLower(*experimentType) {
         case "general":
             log.Println("Experiment: One topic for everyone")

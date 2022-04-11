@@ -27,7 +27,6 @@ type server struct {
 
 func (s *server) ToLibP2P(ctx context.Context, in *pb.Gossip) (*pb.Control, error) {
     // Log format is "time | handler | received/sent | orign/destination | data"
-    log.Println("___________________________________________")
     log.Printf("| gRPC-Server | Received | Rippled | %v | %v \n", in.GetHash(), in.GetValidator_Key())
 
     //Send message to gossipsub
