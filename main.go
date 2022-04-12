@@ -109,7 +109,7 @@ func main() {
     //          general connects statically with everyone in the peers list
     //          the other two make a dynamic discovery in the network using mDNS
     // -----------------------------------------
-    if strings.ToLower(*experimentType) == "general" {
+    // if strings.ToLower(*experimentType) == "general" {
         //First we try to connect to everyone on the list
         for i := 0; i<len(thisNode.peersList); i++ {
             peerAddr := getPeerMultAddr(thisNode.peersList[i])
@@ -123,15 +123,15 @@ func main() {
             }
         }
 
-        //Now we wait for incoming connections
-        startPeer(ctx, host, handleStream)
-    } else {
-        log.Println("Finding peers...")
-        // setup local mDNS discovery
-        if err := setupDiscovery(host); err != nil {
-            panic(err)
-        }
-    }
+    //     //Now we wait for incoming connections
+    //     startPeer(ctx, host, handleStream)
+    // } else {
+    //     log.Println("Finding peers...")
+    //     // setup local mDNS discovery
+    //     if err := setupDiscovery(host); err != nil {
+    //         panic(err)
+    //     }
+    // }
     log.Println("------------------------------------------------------------------")
 
     // -----------------------------------------
