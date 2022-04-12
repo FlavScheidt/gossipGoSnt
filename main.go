@@ -123,8 +123,8 @@ func main() {
             }
         }
 
-    //     //Now we wait for incoming connections
-    //     startPeer(ctx, host, handleStream)
+        //Now we wait for incoming connections
+        startPeer(ctx, host, handleStream)
     // } else {
     //     log.Println("Finding peers...")
     //     // setup local mDNS discovery
