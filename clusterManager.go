@@ -43,7 +43,7 @@ func newNode()(nodeInfo) {
     thisNode.name =  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
 
     //get node id from clusterConfig.csv
-    clusterConfig, err := os.Open("clusterConfig.csv")
+    clusterConfig, err := os.Open("/root/rippledTools/ConfigCluster/ClusterConfigSmall.csv")
     if err != nil {
         log.Fatal(err)
     }
@@ -64,7 +64,7 @@ func newNode()(nodeInfo) {
     }
 
     //Creates list of peers
-    unl, err := os.Open("./clusterConfig/"+thisNode.name+".txt")
+    unl, err := os.Open("/root/rippledTools/ConfigCluster/unl/gossipSmall/"+thisNode.name+".txt")
     if err != nil {
         log.Fatal(err)
     }
@@ -81,7 +81,7 @@ func newNode()(nodeInfo) {
     //Inserts info about every peer in the list
     for j := 0; j<len(thisNode.peersList); j++ {
         searchString := ","+thisNode.peersList[j].name+","
-        clusterConfig, err := os.Open("clusterConfig.csv")
+        clusterConfig, err := os.Open("/root/rippledTools/ConfigCluster/ClusterConfigSmall.csv")
         if err != nil {
             log.Fatal(err)
         }
