@@ -114,6 +114,9 @@ func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHan
 
     log.Println("Waiting for incoming connections")
     log.Println()
+
+    // Wait forever
+    select {}
 }
 
 //Habndle streams after receiving an incoming transmission
