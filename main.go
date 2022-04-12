@@ -97,13 +97,6 @@ func main() {
         log.Printf(" - %v\n", la)
     }
 
-    //Create new GossipSub instance
-    ps, err := pubsub.NewGossipSub(ctx, host)
-    if err != nil {
-        panic(err)
-    }
-    log.Println("GossipSub service created")
-
     // -----------------------------------------
     //      Libp2p Connections
     //          general connects statically with everyone in the peers list
@@ -124,7 +117,7 @@ func main() {
         }
 
         //Now we wait for incoming connections
-        startPeer(ctx, host, handleStream)
+        go startPeer(ctx, host, handleStream)
     // } else {
     //     log.Println("Finding peers...")
     //     // setup local mDNS discovery
@@ -133,6 +126,13 @@ func main() {
     //     }
     // }
     log.Println("------------------------------------------------------------------")
+
+    //Create new GossipSub instance
+    ps, err := pubsub.NewGossipSub(ctx, host)
+    if err != nil {
+        panic(err)
+    }
+    log.Println("GossipSub service created")
 
     // -----------------------------------------
     //      gRPC Client
