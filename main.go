@@ -27,6 +27,7 @@ const sourcePort = 45511 //for libp2p
 
 //Global, because I cannot modify the toRippled function
 var nodeTopic *Topic
+var publishingTopics []*Topic
 
 func main() {
 
@@ -78,7 +79,7 @@ func main() {
     log.Println("------------------------------------------------------------------")
     log.Println("Libp2p Node")
     //Get node data
-    thisNode := newNode()
+    thisNode := newNode(strings.ToLower(*experimentType))
 
     var r io.Reader
 
@@ -174,6 +175,7 @@ func main() {
         // proposalsTopic      = peerInfo{name: "proposals", id: 0, ip: ""}
 
         nodeTopic, err = Subscribe(ctx, ps, c, host.ID(), validationsTopic)
+        publishingTopics = append(publishingTopics, nodeTopic)
         if err != nil {
             panic(err)
         }
@@ -185,6 +187,7 @@ func main() {
 
         //First, subscrive to nodes own topic
         nodeTopic, err = Subscribe(ctx, ps, c, host.ID(), peerInfo{name: thisNode.name})
+        publishingTopics = append(publishingTopics, nodeTopic)
         if err != nil {
             panic(err)
         }
@@ -200,8 +203,26 @@ func main() {
             log.Println("Joined topic for ", topicsList[i].name)
         }
     case "unl":
-        log.Println("Not implemented. Shutting down...")
-        return
+        var topicsList []*Topic
+        var topicAux *Topic
+
+        //Subscribe on the topic to listen
+        topicAux, err = Subscribe(ctx, ps, c, host.ID(), peerInfo{name: thisNode.unlName})
+        topicsList = append(topicsList, topicAux)
+        if err != nil {
+            panic(err)
+        }
+        log.Println("Joined topic for ", topicsList[0].name)
+
+        //Subscribe to the topic to listen to 
+        for i := 0; i<len(thisNode.unlPublishing); i++ {
+            topicAux, err = Subscribe(ctx, ps, c, host.ID(), peerInfo{name:thisNode.unlPublishing[i]})
+            publishingTopics = append(publishingTopics, topicAux)
+            if err != nil {
+                panic(err)
+            }
+            log.Println("Joined publishing topic for ", publishingTopics[i].name)
+        }
 
     }
     log.Println("------------------------------------------------------------------")

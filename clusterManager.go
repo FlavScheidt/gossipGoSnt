@@ -24,6 +24,8 @@ type nodeInfo struct {
     name string
     id int
     peersList []peerInfo
+    unlName string
+    unlPublishing []string
 }
 
 func check(e error) {
@@ -32,7 +34,7 @@ func check(e error) {
     }
 }
 
-func newNode()(nodeInfo) {
+func newNode(experiment string)(nodeInfo) {
     var thisNode nodeInfo;
 
     //get node name from /etc/hostname
@@ -43,7 +45,7 @@ func newNode()(nodeInfo) {
     thisNode.name =  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
 
     //get node id from clusterConfig.csv
-    clusterConfig, err := os.Open("./clusterConfigSmall.csv")
+    clusterConfig, err := os.Open("./clusterConfig.csv")
     if err != nil {
         log.Fatal(err)
     }
@@ -60,45 +62,81 @@ func newNode()(nodeInfo) {
         if strings.Contains(scanner.Text(), searchString) {
             dataExtract := strings.Split(scanner.Text(), ",")
             thisNode.id, err = strconv.Atoi(dataExtract[2])
+            thisNode.unlName = dataExtract[3]
         }
     }
 
     //Creates list of peers
-    unl, err := os.Open("/root/rippledTools/ConfigCluster/unl/gossipSmall/"+thisNode.name+".txt")
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer unl.Close()
-    scanner = bufio.NewScanner(unl)
-        if err := scanner.Err(); err != nil {
-        log.Fatal(err)
-    }
+    if experiment == "validator" {
+        unlFile := thisNode.name 
 
-    for scanner.Scan() {
-        thisNode.peersList = append(thisNode.peersList, peerInfo{strings.TrimSpace(scanner.Text()), "", 0})
-    }
-
-    //Inserts info about every peer in the list
-    for j := 0; j<len(thisNode.peersList); j++ {
-        searchString := ","+thisNode.peersList[j].name+","
-        clusterConfig, err := os.Open("./clusterConfigSmall.csv")
+        unl, err := os.Open("/root/gossipGoSnt/clusterConfig/unl/"+unlFile+".txt")
         if err != nil {
             log.Fatal(err)
         }
-        scanner = bufio.NewScanner(clusterConfig)
-        if err := scanner.Err(); err != nil {
+        defer unl.Close()
+        scanner = bufio.NewScanner(unl)
+            if err := scanner.Err(); err != nil {
             log.Fatal(err)
         }
 
         for scanner.Scan() {
-            if strings.Contains(scanner.Text(), searchString) {
-                dataExtract := strings.Split(scanner.Text(), ",")
-                thisNode.peersList[j].id, err = strconv.Atoi(dataExtract[2])
-                thisNode.peersList[j].ip = dataExtract[0]
-            }
+            thisNode.peersList = append(thisNode.peersList, peerInfo{strings.TrimSpace(scanner.Text()), "", 0})
         }
 
+        //Inserts info about every peer in the list
+        for j := 0; j<len(thisNode.peersList); j++ {
+            searchString := ","+thisNode.peersList[j].name+","
+            clusterConfig, err := os.Open("./clusterConfig.csv")
+            if err != nil {
+                log.Fatal(err)
+            }
+            scanner = bufio.NewScanner(clusterConfig)
+            if err := scanner.Err(); err != nil {
+                log.Fatal(err)
+            }
+
+            for scanner.Scan() {
+                if strings.Contains(scanner.Text(), searchString) {
+                    dataExtract := strings.Split(scanner.Text(), ",")
+                    thisNode.peersList[j].id, err = strconv.Atoi(dataExtract[2])
+                    thisNode.peersList[j].ip = dataExtract[0]
+                }
+            }
+        }
+    } else {
+        //List of topics to publish in
+        //List files on the directory
+        files, err := ioutil.ReadDir("/root/gossipGoSnt/clusterConfig/unl/")
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        //iterate over files until this node is found or EOF
+        for _, file := range files {
+            fileName := file.Name()
+            unl, err := os.Open("/root/gossipGoSnt/clusterConfig/unl/"+fileName)
+            if err != nil {
+                log.Fatal(err)
+            }
+            defer unl.Close()
+            scanner = bufio.NewScanner(unl)
+                if err := scanner.Err(); err != nil {
+                log.Fatal(err)
+            }
+
+            //if this node is on the file, add the filename to the list
+            for scanner.Scan() {
+                if strings.TrimSpace(scanner.Text()) == thisNode.name {
+                    thisNode.unlPublishing = append(thisNode.unlPublishing, fileName[:len(fileName)-4])
+                }
+            }
+
+        }
+       
     }
+
+
 
     return thisNode
 }

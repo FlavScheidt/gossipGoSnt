@@ -30,8 +30,10 @@ func (s *server) ToLibP2P(ctx context.Context, in *pb.Gossip) (*pb.Control, erro
     log.Printf("| gRPC-Server | Received | Rippled | %v | %v \n", in.GetHash(), in.GetValidator_Key())
 
     //Send message to gossipsub
-    nodeTopic.Publish(in.GetMessage(), in.GetValidator_Key(), in.GetHash())   
-    log.Println("Message published") 
+     for i := 0; i<len(publishingTopics); i++ {
+        publishingTopics[i].Publish(in.GetMessage(), in.GetValidator_Key(), in.GetHash())   
+        log.Println("Message published on topic", publishingTopics[i].name)
+    } 
 
     return &pb.Control{Stream: true}, nil
 }
