@@ -70,7 +70,7 @@ func newNode(experiment string)(nodeInfo) {
     if experiment == "validator" {
         unlFile := thisNode.name 
 
-        unl, err := os.Open("/root/gossipGoSnt/clusterConfig/unl/"+unlFile+".txt")
+        unl, err := os.Open("/root/gossipGoSnt/clusterConfig/"+unlFile+".txt")
         if err != nil {
             log.Fatal(err)
         }
