@@ -173,7 +173,7 @@ func startPeerAndConnect(ctx context.Context, h host.Host, destination string) {
     for {
         err = h.Connect(context.Background(), pi)
         if err != nil {
-            log.Printf("error connecting to peer %s: %s\n Will try again... \n", pi.ID.Pretty(), err)
+            // log.Printf("error connecting to peer %s: %s\n Will try again... \n", pi.ID.Pretty(), err)
             time.Sleep(5 * time.Second) //Wait 5 seconds to try to connect again
         } else {
             log.Println("Established connection to ", pi.ID.Pretty())
