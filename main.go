@@ -106,15 +106,16 @@ func main() {
     if strings.ToLower(*experimentType) == "general" || strings.ToLower(*experimentType) == "unl" {
         //First we try to connect to everyone on the list
         for i := 0; i<len(thisNode.peersList); i++ {
+            log.Println("Calling ", thisNode.peersList[i].name)
             peerAddr := getPeerMultAddr(thisNode.peersList[i])
 
-            rw, err := startPeerAndConnect(ctx, host, peerAddr)
-            if err != nil {
-               log.Println("Peer is not online... Next one.")
-            } else {
-                go writeData(rw)
-                go readData(rw)
-            }
+            go startPeerAndConnect(ctx, host, peerAddr)
+            // if err != nil {
+            //    log.Println("Peer is not online... Next one.")
+            // } //else {
+            //     go writeData(rw)
+            //     go readData(rw)
+            // }
         }
 
         //Now we wait for incoming connections
@@ -129,7 +130,13 @@ func main() {
     log.Println("------------------------------------------------------------------")
 
     //Create new GossipSub instance
-    ps, err := pubsub.NewGossipSub(ctx, host)
+    tracer, err := pubsub.NewJSONTracer("./trace.json")
+    if err != nil {
+      panic(err)
+    }
+
+
+    ps, err := pubsub.NewGossipSub(ctx, host, pubsub.WithEventTracer(tracer))
     if err != nil {
         panic(err)
     }

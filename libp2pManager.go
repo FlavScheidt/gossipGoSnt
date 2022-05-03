@@ -3,8 +3,8 @@ package main
 import (
     "context"
     "fmt"
-    "os"
-    "bufio"
+    // "os"
+    // "bufio"
     "io"
     "log"
     "time"
@@ -57,37 +57,37 @@ func makeHost(port int, seed io.Reader) (host.Host, error) {
 //      Static discovery
 //			Connect to peers on the list
 // -----------------------------------------
-func readData(rw *bufio.ReadWriter) {
-    for {
-        str, _ := rw.ReadString('\n')
+// func readData(rw *bufio.ReadWriter) {
+//     for {
+//         str, _ := rw.ReadString('\n')
 
-        if str == "" {
-            return
-        }
-        if str != "\n" {
-            // Green console colour:    \x1b[32m
-            // Reset console colour:    \x1b[0m
-            fmt.Printf("\x1b[32m%s\x1b[0m> ", str)
-        }
+//         if str == "" {
+//             return
+//         }
+//         if str != "\n" {
+//             // Green console colour:    \x1b[32m
+//             // Reset console colour:    \x1b[0m
+//             fmt.Printf("\x1b[32m%s\x1b[0m> ", str)
+//         }
 
-    }
-}
+//     }
+// }
 
-func writeData(rw *bufio.ReadWriter) {
-    stdReader := bufio.NewReader(os.Stdin)
+// func writeData(rw *bufio.ReadWriter) {
+//     stdReader := bufio.NewReader(os.Stdin)
 
-    for {
-        fmt.Print("> ")
-        sendData, err := stdReader.ReadString('\n')
-        if err != nil {
-            log.Println(err)
-            return
-        }
+//     for {
+//         fmt.Print("> ")
+//         sendData, err := stdReader.ReadString('\n')
+//         if err != nil {
+//             log.Println(err)
+//             return
+//         }
 
-        rw.WriteString(fmt.Sprintf("%s\n", sendData))
-        rw.Flush()
-    }
-}
+//         rw.WriteString(fmt.Sprintf("%s\n", sendData))
+//         rw.Flush()
+//     }
+// }
 
 //Start peer and wait for icoming connections
 //We are not veirfying if the node is on the list or not because we are using a controled test environment
@@ -124,17 +124,17 @@ func handleStream(s network.Stream) {
     log.Println("Got a new stream!")
 
     // Create a buffer stream for non blocking read and write.
-    rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
+   // rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
 
-    go readData(rw)
-    go writeData(rw)
-
+   //  go readData(rw)
+   //  go writeData(rw)
+ 
     // stream 's' will stay open until you close it (or the other side closes it).
 }
 
 
 //Start peert and connect to the list =)
-func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (*bufio.ReadWriter, error) {
+func startPeerAndConnect(ctx context.Context, h host.Host, destination string) { //(error){ //(*bufio.ReadWriter, error) {
     // log.Println("This node's multiaddresses:")
     // for _, la := range h.Addrs() {
     //     log.Printf(" - %v\n", la)
@@ -145,14 +145,14 @@ func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (
     maddr, err := multiaddr.NewMultiaddr(destination)
     if err != nil {
         log.Println(err)
-        return nil, err
+        return
     }
 
     // Extract the peer ID from the multiaddr.
     info, err := peer.AddrInfoFromP2pAddr(maddr)
     if err != nil {
         log.Println(err)
-        return nil, err
+        return
     }
 
     // Add the destination's peer multiaddress in the peerstore.
@@ -161,17 +161,29 @@ func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (
 
     // Start a stream with the destination.
     // Multiaddress of the destination peer is fetched from the peerstore using 'peerId'.
-    s, err := h.NewStream(context.Background(), info.ID, "/xrpl/1.0.0")
-    if err != nil {
-        log.Println(err)
-        return nil, err
+    // s, err := h.NewStream(context.Background(), info.ID, "/xrpl/1.0.0")
+    // if err != nil {
+    //     log.Println(err)
+    //     return err
+    // }
+
+    //Connect
+    pi := h.Peerstore().PeerInfo(info.ID)
+
+    for {
+        err = h.Connect(context.Background(), pi)
+        if err != nil {
+            log.Printf("error connecting to peer %s: %s\n Will try again... \n", pi.ID.Pretty(), err)
+            time.Sleep(5 * time.Second) //Wait 5 seconds to try to connect again
+        } else {
+            log.Println("Established connection to ", pi.ID.Pretty())
+            return
+        }
     }
-    log.Println("Established connection to destination")
 
-    // Create a buffered stream so that read and writes are non blocking.
-    rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
-
-    return rw, nil
+    // // Create a buffered stream so that read and writes are non blocking.
+    // rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
+    // return nil
 }
 
 
