@@ -95,7 +95,7 @@ func SubscribeWithoutReceiving(ctx context.Context, ps *pubsub.PubSub, gRPCclien
         ctx:            ctx,
         ps:             ps,
         topic:          topic,
-        // sub:            sub,
+        sub:            sub,
         self:           selfID,
         // validatorID:    peerTopic.id,
         // validatorKey:   peer.
