@@ -118,7 +118,7 @@ func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
         cr.Messages <- cm
         m := <-cr.Messages
         // Log format is "time | handler | received/sent | orign/destination | data"
-        log.Printf("| GossipSub | Recieved | GossipSub | %v | %v|  %v | %v \n", msg.ReceivedFrom, m.SenderName, m.Hash, m.Validator_Key)
+        log.Printf("| GossipSub | Recieved | GossipSub | %v | %v | %v|  %v | %v \n", cr.name, msg.ReceivedFrom, m.SenderName, m.Hash, m.Validator_Key)
 
         //Send to rippled
         _, err = gRPCclient.ToRippled(cr.ctx, &pb.Gossip{Message: m.Message, Validator_Key: m.Validator_Key, Hash: m.Hash})
