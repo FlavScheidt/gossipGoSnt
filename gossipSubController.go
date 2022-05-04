@@ -85,11 +85,11 @@ func SubscribeWithoutReceiving(ctx context.Context, ps *pubsub.PubSub, gRPCclien
         return nil, err
     }
 
-    // // and subscribe to it
-    // sub, err := topic.Subscribe()
-    // if err != nil {
-    //     return nil, err
-    // }
+    // and subscribe to it
+    sub, err := topic.Subscribe()
+    if err != nil {
+        return nil, err
+    }
 
     cr := &Topic{
         ctx:            ctx,
