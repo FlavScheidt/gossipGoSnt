@@ -76,6 +76,39 @@ func Subscribe(ctx context.Context, ps *pubsub.PubSub, gRPCclient pb.GossipMessa
     return cr, nil
 }
 
+// Subscribe to the topic only for publishing
+//Doenst really subscribes
+func SubscribeWithoutReceiving(ctx context.Context, ps *pubsub.PubSub, gRPCclient pb.GossipMessageClient, selfID peer.ID, peerTopic peerInfo) (*Topic, error) {
+    // join the pubsub topic
+    topic, err := ps.Join(topicName(peerTopic.name))
+    if err != nil {
+        return nil, err
+    }
+
+    // // and subscribe to it
+    // sub, err := topic.Subscribe()
+    // if err != nil {
+    //     return nil, err
+    // }
+
+    cr := &Topic{
+        ctx:            ctx,
+        ps:             ps,
+        topic:          topic,
+        sub:            sub,
+        self:           selfID,
+        // validatorID:    peerTopic.id,
+        // validatorKey:   peer.
+        // ip:             peer.ip,
+        name:           peerTopic.name, 
+        Messages: make(chan *Message, BufSize),
+    }
+
+    // start reading messages from the subscription in a loop
+    // go cr.readLoop(gRPCclient)
+    return cr, nil
+}
+
 // Publish sends a message to the pubsub topic.
 func (cr *Topic) Publish(message []byte, validatorKey string, hash string) error {
     m := Message{

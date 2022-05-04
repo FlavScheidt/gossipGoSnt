@@ -223,7 +223,7 @@ func main() {
 
         //Subscribe to the topic to listen to 
         for i := 0; i<len(thisNode.unlPublishing); i++ {
-            topicAux, err = Subscribe(ctx, ps, c, host.ID(), peerInfo{name:thisNode.unlPublishing[i]})
+            topicAux, err = SubscribeWithoutReceiving(ctx, ps, c, host.ID(), peerInfo{name:thisNode.unlPublishing[i]})
             publishingTopics = append(publishingTopics, topicAux)
             if err != nil {
                 panic(err)
