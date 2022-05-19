@@ -103,30 +103,30 @@ func main() {
     //          general connects statically with everyone in the peers list
     //          the other two make a dynamic discovery in the network using mDNS
     // -----------------------------------------
-    if strings.ToLower(*experimentType) == "general" { //|| strings.ToLower(*experimentType) == "unl" {
-        //First we try to connect to everyone on the list
-        for i := 0; i<len(thisNode.peersList); i++ {
-            log.Println("Calling ", thisNode.peersList[i].name)
-            peerAddr := getPeerMultAddr(thisNode.peersList[i])
+    // if strings.ToLower(*experimentType) == "general" { //|| strings.ToLower(*experimentType) == "unl" {
+    //     //First we try to connect to everyone on the list
+    //     for i := 0; i<len(thisNode.peersList); i++ {
+    //         log.Println("Calling ", thisNode.peersList[i].name)
+    //         peerAddr := getPeerMultAddr(thisNode.peersList[i])
 
-            go startPeerAndConnect(ctx, host, peerAddr)
-            // if err != nil {
-            //    log.Println("Peer is not online... Next one.")
-            // } //else {
-            //     go writeData(rw)
-            //     go readData(rw)
-            // }
-        }
+    //         go startPeerAndConnect(ctx, host, peerAddr)
+    //         // if err != nil {
+    //         //    log.Println("Peer is not online... Next one.")
+    //         // } //else {
+    //         //     go writeData(rw)
+    //         //     go readData(rw)
+    //         // }
+    //     }
 
-        //Now we wait for incoming connections
-        go startPeer(ctx, host, handleStream)
-    } else {
+    //     //Now we wait for incoming connections
+    //     go startPeer(ctx, host, handleStream)
+    // } else {
         log.Println("Finding peers...")
         // setup local mDNS discovery
         if err := setupDiscovery(host); err != nil {
             panic(err)
         }
-    }
+    // }
     log.Println("------------------------------------------------------------------")
 
     //Create new GossipSub instance
