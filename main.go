@@ -126,7 +126,7 @@ func main() {
         if err := setupDiscovery(host); err != nil {
             panic(err)
         }
-    // }
+    }
     log.Println("------------------------------------------------------------------")
 
     //Create new GossipSub instance
@@ -193,7 +193,7 @@ func main() {
         var topicAux *Topic
 
         //First, subscrive to nodes own topic
-        nodeTopic, err = Subscribe(ctx, ps, c, host.ID(), peerInfo{name: thisNode.name})
+        nodeTopic, err = SubscribeWithoutReceiving(ctx, ps, c, host.ID(), peerInfo{name: thisNode.name})
         publishingTopics = append(publishingTopics, nodeTopic)
         if err != nil {
             panic(err)
