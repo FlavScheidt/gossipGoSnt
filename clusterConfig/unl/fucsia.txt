@@ -4,6 +4,8 @@ vlotus
 scaterham
 caterham
 vcaterham
+lotus
+sminardi
 vsauber
 vminardi
-brawn
+vligier

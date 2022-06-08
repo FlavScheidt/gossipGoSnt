@@ -2,6 +2,10 @@ scaterham
 vsauber
 caterham
 vminardi
-stoleman
 vcaterham
 vligier
+lotus
+sminardi
+toleman
+brawn
+sbrawn

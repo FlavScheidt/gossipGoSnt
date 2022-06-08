@@ -6,3 +6,4 @@ slotus
 benetton
 sminardi
 toleman
+slotus

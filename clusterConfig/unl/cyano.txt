@@ -1,10 +1,10 @@
 caterham
-vminardi
-stoleman
 vcaterham
-vligier
 lotus
-sauber
 sminardi
+vminardi
+ligier
 brawn
+stoleman
+sauber
 ligier
