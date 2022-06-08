@@ -67,10 +67,10 @@ func newNode(experiment string)(nodeInfo) {
     }
 
     //Creates list of peers
-    // if experiment == "validator" {
+    if experiment == "validator" {
         unlFile := thisNode.name 
 
-        unl, err := os.Open("/root/gossipGoSnt/clusterConfig/"+unlFile+".txt")
+        unl, err := os.Open("/root/gossipGoSnt/clusterConfig/validator/"+unlFile+".txt")
         if err != nil {
             log.Fatal(err)
         }
@@ -104,7 +104,7 @@ func newNode(experiment string)(nodeInfo) {
                 }
             }
         }
-    // } else {
+    } else {
         //List of topics to publish in
         //List files on the directory
         files, err := ioutil.ReadDir("/root/gossipGoSnt/clusterConfig/unl/")
@@ -132,7 +132,7 @@ func newNode(experiment string)(nodeInfo) {
                 }
             }
 
-        // }
+        }
        
     }
 
