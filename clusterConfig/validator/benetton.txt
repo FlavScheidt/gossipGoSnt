@@ -6,3 +6,5 @@ toleman
 ligier
 vsauber
 vtoleman
+vlotus
+vcaterham

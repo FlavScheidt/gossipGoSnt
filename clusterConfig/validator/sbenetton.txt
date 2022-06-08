@@ -6,3 +6,4 @@ minardi
 sbrawn
 slotus
 ssauber
+ligier
