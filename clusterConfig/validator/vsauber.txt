@@ -8,3 +8,8 @@ lotus
 caterham
 benetton
 sauber
+vtoleman
+minardi
+slotus
+stoleman
+vbenetton

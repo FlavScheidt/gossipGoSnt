@@ -7,3 +7,10 @@ lotus
 minardi
 sauber
 benetton
+ligier
+sbrawn
+slotus
+sminardi
+ssauber
+vbenetton
+vtoleman

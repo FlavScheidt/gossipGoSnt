@@ -7,3 +7,10 @@ vcaterham
 vsauber
 sauber
 benetton
+ligier
+sbenetton
+slotus
+ssauber
+vbenetton
+vbrawn
+lotus

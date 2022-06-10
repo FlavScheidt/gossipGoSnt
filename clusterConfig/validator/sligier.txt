@@ -10,3 +10,7 @@ vbrawn
 ssauber
 vbenetton
 sauber
+benetton
+lotus
+sbrawn
+scaterham

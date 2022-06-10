@@ -8,3 +8,9 @@ vminardi
 vbrawn
 sauber
 vbenetton
+benetton
+ssauber
+sminardi
+sbrawn
+ligier
+toleman

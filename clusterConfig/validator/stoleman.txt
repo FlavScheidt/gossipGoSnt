@@ -8,3 +8,9 @@ sminardi
 vlotus
 minardi
 benetton
+sbenetton
+scaterham
+slotus
+vsauber
+toleman
+vminardi

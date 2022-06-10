@@ -7,3 +7,10 @@ vbenetton
 ssauber
 sbenetton
 ligier
+minardi
+sauber
+vligier
+vcaterham
+vlotus
+stoleman
+vsauber

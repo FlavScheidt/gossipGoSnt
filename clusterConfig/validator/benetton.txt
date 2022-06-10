@@ -8,3 +8,9 @@ vsauber
 vtoleman
 vlotus
 vcaterham
+brawn
+sligier
+lotus
+vligier
+sminardi
+sbenetton

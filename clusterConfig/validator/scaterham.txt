@@ -7,3 +7,10 @@ vminardi
 ssauber
 sminardi
 vtoleman
+minardi
+sauber
+sbenetton
+sbrawn
+sligier
+stoleman
+toleman

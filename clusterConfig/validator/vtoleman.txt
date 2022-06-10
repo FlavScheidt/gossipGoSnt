@@ -7,3 +7,10 @@ scaterham
 brawn
 lotus
 caterham
+vminardi
+vsauber
+sauber
+minardi
+ssauber
+sbenetton
+vcaterham
