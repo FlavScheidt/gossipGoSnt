@@ -1,7 +1,7 @@
-192.168.20.40,slotus,152,blue
+192.168.20.40,slotus,152,red
 192.168.20.41,scaterham,158,fucsia
 192.168.20.43,sligier,160,pink
-192.168.20.45,sminardi,193,red
+192.168.20.45,sminardi,193,cyano
 192.168.20.46,ssauber,103,green
 192.168.20.44,sbrawn,172,blue
 192.168.20.47,stoleman,108,cyano
@@ -17,8 +17,8 @@
 192.168.20.59,lotus,236,yellow
 192.168.20.19,caterham,118,orange
 192.169.20.23,ligier,136,fucsia
-192.168.20.24,minardi,140,blue
+192.168.20.24,minardi,140,cyano
 192.168.20.28,sauber,124,fucsia
 192.168.20.29,brawn,139,red
-192.168.20.30,toleman,141,blue
-192.168.20.31,benetton,142,blue
+192.168.20.30,toleman,141,yellow
+192.168.20.31,benetton,142,pink
