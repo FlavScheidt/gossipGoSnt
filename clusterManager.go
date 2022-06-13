@@ -133,7 +133,7 @@ func newNode(experiment string)(nodeInfo) {
             }
 
         }
-        log.Println("Publishing loist size: ", len(thisNode.unlPublishing))
+        log.Println("Publishing list size: ", len(thisNode.unlPublishing))
        
     }
 
