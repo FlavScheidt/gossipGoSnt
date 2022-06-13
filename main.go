@@ -223,7 +223,7 @@ func main() {
 
         //Subscribe to the topic to publish 
         for i := 0; i<len(thisNode.unlPublishing); i++ {
-            first we need to know if we are already subscribed to the topic
+            //first we need to know if we are already subscribed to the topic
             if thisNode.unlPublishing[i] == thisNode.unlName {
                 log.Println("Already subscribed")
             } //else {
