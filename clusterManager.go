@@ -131,6 +131,7 @@ func newNode(experiment string)(nodeInfo) {
             for scanner.Scan() {
                 if strings.TrimSpace(scanner.Text()) == thisNode.name {
                     thisNode.unlPublishing = append(thisNode.unlPublishing, fileName[:len(fileName)-4])
+
                     //If it is the UNL the node is subscribed for, we sinalize for future use
                     if fileName[:len(fileName)-4] == thisNode.unlName {
                         thisNode.publishSubscribed = true
@@ -141,6 +142,9 @@ func newNode(experiment string)(nodeInfo) {
 
         }
         log.Println("Publishing list size: ", len(thisNode.unlPublishing))
+        for i := 0; i<len(thisNode.unlPublishing); i++ {
+            log.Println(thisNode.unlPublishing[i])
+        }
        
     }
 
