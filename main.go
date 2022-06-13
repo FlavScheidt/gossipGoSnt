@@ -225,7 +225,7 @@ func main() {
         j := 0
         if thisNode.publishSubscribed == true {
             publishingTopics = append(publishingTopics, topicAux)
-            log,Println("Also publishes on this topic")
+            log.Println("Also publishes on this topic")
             j++
         }
 
