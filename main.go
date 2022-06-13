@@ -221,18 +221,26 @@ func main() {
         }
         log.Println("Joined topic for ", topicsList[0].name)
 
+        //If this node also publishes to this topic, we add it to the publishing list
+        j := 0
+        if thisNode.publishSubscribed == true {
+            publishingTopics = append(publishingTopics, topicAux)
+            j++
+        }
+
         //Subscribe to the topic to publish 
         for i := 0; i<len(thisNode.unlPublishing); i++ {
             //first we need to know if we are already subscribed to the topic
             if thisNode.unlPublishing[i] == thisNode.unlName {
-                log.Println("Already subscribed")
+                log.Println("Already subscribed to thisNode.unlPublishing[i]")
             } else {
-        //         topicAux, err = SubscribeWithoutReceiving(ctx, ps, c, host.ID(), peerInfo{name:thisNode.unlPublishing[i]})
-        //         publishingTopics = append(publishingTopics, topicAux)
-        //         if err != nil {
-        //             panic(err)
-        //         }
-                log.Println("Joined publishing topic for ", publishingTopics[i].name)
+                topicAux, err = SubscribeWithoutReceiving(ctx, ps, c, host.ID(), peerInfo{name:thisNode.unlPublishing[i]})
+                publishingTopics = append(publishingTopics, topicAux)
+                if err != nil {
+                    panic(err)
+                }
+                log.Println("Joined publishing topic for ", publishingTopics[j].name)
+                j++
             }
         }
 

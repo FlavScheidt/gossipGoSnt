@@ -26,6 +26,7 @@ type nodeInfo struct {
     peersList []peerInfo
     unlName string
     unlPublishing []string
+    publishSubscribed bool //indicates if the node is subscribed to the same topic in which it publishes
 }
 
 func check(e error) {
@@ -63,6 +64,7 @@ func newNode(experiment string)(nodeInfo) {
             dataExtract := strings.Split(scanner.Text(), ",")
             thisNode.id, err = strconv.Atoi(dataExtract[2])
             thisNode.unlName = dataExtract[3]
+            thisNode.publishSubscribed = false
         }
     }
 
@@ -129,6 +131,10 @@ func newNode(experiment string)(nodeInfo) {
             for scanner.Scan() {
                 if strings.TrimSpace(scanner.Text()) == thisNode.name {
                     thisNode.unlPublishing = append(thisNode.unlPublishing, fileName[:len(fileName)-4])
+                    //If it is the UNL the node is subscribed for, we sinalize for future use
+                    if fileName[:len(fileName)-4] == thisNode.unlName {
+                        thisNode.publishSubscribed = true
+                    }
                 }
             }
 
