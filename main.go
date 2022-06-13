@@ -234,7 +234,7 @@ func main() {
         //         }
         //         log.Println("Joined publishing topic for ", publishingTopics[i].name)
         //     }
-        // }
+        }
 
     }
     log.Println("------------------------------------------------------------------")
