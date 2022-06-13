@@ -5,14 +5,12 @@ sligier
 toleman
 sauber
 vlotus
-sauber
-vlotus
 lotus
 vligier
 sminardi
 brawn
 minardi
 sbrawn
-ssauber
-toleman
+sauber
+vtoleman
 vbenetton
