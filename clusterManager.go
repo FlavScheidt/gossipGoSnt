@@ -133,6 +133,7 @@ func newNode(experiment string)(nodeInfo) {
             }
 
         }
+        log.Println("Publishing loist size: ", len(thisNode.unlPublishing))
        
     }
 
