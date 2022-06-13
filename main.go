@@ -226,14 +226,14 @@ func main() {
             //first we need to know if we are already subscribed to the topic
             if thisNode.unlPublishing[i] == thisNode.unlName {
                 log.Println("Already subscribed")
-            } //else {
+            } else {
         //         topicAux, err = SubscribeWithoutReceiving(ctx, ps, c, host.ID(), peerInfo{name:thisNode.unlPublishing[i]})
         //         publishingTopics = append(publishingTopics, topicAux)
         //         if err != nil {
         //             panic(err)
         //         }
-        //         log.Println("Joined publishing topic for ", publishingTopics[i].name)
-        //     }
+                log.Println("Joined publishing topic for ", publishingTopics[i].name)
+            }
         }
 
     }
