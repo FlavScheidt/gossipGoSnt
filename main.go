@@ -44,6 +44,7 @@ func main() {
 
     mw := io.MultiWriter(os.Stdout, logFile)
     log.SetOutput(mw)
+    log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
     // -----------------------------------------
     //      Create Context
