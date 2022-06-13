@@ -225,6 +225,7 @@ func main() {
         j := 0
         if thisNode.publishSubscribed == true {
             publishingTopics = append(publishingTopics, topicAux)
+            log,Println("Also publishes on this topic")
             j++
         }
 
@@ -232,7 +233,7 @@ func main() {
         for i := 0; i<len(thisNode.unlPublishing); i++ {
             //first we need to know if we are already subscribed to the topic
             if thisNode.unlPublishing[i] == thisNode.unlName {
-                log.Println("Already subscribed to thisNode.unlPublishing[i]")
+                log.Println("Already subscribed to", thisNode.unlPublishing[i])
             } else {
                 topicAux, err = SubscribeWithoutReceiving(ctx, ps, c, host.ID(), peerInfo{name:thisNode.unlPublishing[i]})
                 publishingTopics = append(publishingTopics, topicAux)

@@ -134,6 +134,7 @@ func newNode(experiment string)(nodeInfo) {
                     //If it is the UNL the node is subscribed for, we sinalize for future use
                     if fileName[:len(fileName)-4] == thisNode.unlName {
                         thisNode.publishSubscribed = true
+                        log.Println("INFO: Listens to the same topic it publishes")
                     }
                 }
             }
