@@ -11,6 +11,6 @@ sminardi
 brawn
 minardi
 sbrawn
-sauber
+ssauber
 vtoleman
 vbenetton
