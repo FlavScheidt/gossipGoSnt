@@ -7,7 +7,7 @@ import (
     "encoding/json"
     "log"
 
-    pubsub "github.com/libp2p/go-libp2p-pubsub"
+    pubsub "github.com/FlavScheidt/go-libp2p-pubsub"
     "github.com/libp2p/go-libp2p-core/peer"
 
     pb "github.com/FlavScheidt/gossipGoSnt/proto"

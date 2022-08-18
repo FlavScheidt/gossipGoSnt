@@ -15,7 +15,7 @@ import (
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
     pb "github.com/FlavScheidt/gossipGoSnt/proto"
-    pubsub "github.com/libp2p/go-libp2p-pubsub"
+    pubsub "github.com/FlavScheidt/go-libp2p-pubsub"
 )
 
 
