@@ -82,10 +82,10 @@ func main() {
     dscore := flag.Int("dscore", 4, "When prunning the mesh for oversubscription, keep this many highest-scoring peers. Default 4")
     dlazy := flag.Int("dlazy", 8, "Minimum number of peers to gossip to. Default 8")
     dout := flag.Int("dout", 2, "When pruning the mesh for oversubscription, keep this many outbound connected peers. Default 2")
-    gossipFactor := flag.Float32("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
+    gossipFactor := flag.Float64("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
 
-    InitialDelay := flag.Float32("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
-    Interval := flag.Float32("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
+    InitialDelay := flag.Float64("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
+    Interval := flag.Float64("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
 
     //GS parameters
     op := OverlayParams{
