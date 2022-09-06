@@ -88,18 +88,18 @@ func main() {
 
     //GS parameters
     op := OverlayParams{
-        d:            d,
-        dlo:          dlo,
-        dhi:          dhi,
-        dscore:       dscore,
-        dlazy:        dlazy,
-        dout:         dout,
-        gossipFactor: gossipFactor,
+        d:            *d,
+        dlo:          *dlo,
+        dhi:          *dhi,
+        dscore:       *dscore,
+        dlazy:        *dlazy,
+        dout:         *dout,
+        gossipFactor: *gossipFactor,
     }
 
     hb := HeartbeatParams{
-            InitialDelay: InitialDelay,
-            Interval:     Interval,
+            InitialDelay: *InitialDelay,
+            Interval:     *Interval,
     }
 
     flag.Parse()
