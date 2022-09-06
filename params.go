@@ -34,7 +34,7 @@ type OverlayParams struct {
 
 func pubsubOptions(cfg NodeConfig) ([]pubsub.Option, error) {
 	opts := []pubsub.Option{
-		pubsub.WithEventTracer(cfg.Tracer),
+		// pubsub.WithEventTracer(cfg.Tracer),
 		// pubsub.WithFloodPublish(cfg.FloodPublishing),
 		// scoreParamsOption(cfg.PeerScoreParams),
 	}
