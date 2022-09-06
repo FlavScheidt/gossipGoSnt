@@ -61,7 +61,6 @@ func main() {
     //          We also get parameters for the gossipsub tests
     // -----------------------------------------
     experimentType := flag.String("type", "", "Type of experiment. Default is empty, shuts down")
-    // flag.Parse()
 
     d := flag.Int("d", 8, "Target peers in the mesh. Default 8")
     dlo := flag.Int("dlo", 6, "Finds more peers bellow this value. Default 6")
@@ -73,6 +72,8 @@ func main() {
 
     InitialDelay := flag.Duration("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
     Interval := flag.Duration("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
+
+    flag.Parse()
 
 
     log.Println(strings.ToLower(*experimentType))
@@ -104,11 +105,6 @@ func main() {
             Interval:     *Interval,
     }
 
-    flag.Parse()
-
-    log.Println("EXECUTION INFO")
-    log.Println("Experiment type:", strings.ToLower(*experimentType))
-    log.Println("----")
       
     log.Println("d = ", d)
     log.Println("dlo = ", dlo)
