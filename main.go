@@ -84,8 +84,8 @@ func main() {
     dout := flag.Int("dout", 2, "When pruning the mesh for oversubscription, keep this many outbound connected peers. Default 2")
     gossipFactor := flag.Float64("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
 
-    InitialDelay := flag.Float64("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
-    Interval := flag.Float64("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
+    InitialDelay := flag.Duration("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
+    Interval := flag.Duration("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
 
     //GS parameters
     op := OverlayParams{
@@ -218,6 +218,10 @@ func main() {
     if cfg.OverlayParams.gossipFactor > 0 {
         pubsub.GossipSubGossipFactor = cfg.OverlayParams.gossipFactor
     }
+
+    //Set Heartbeat parameters
+    pubsub.GossipSubHeartbeatInitialDelay = cfg.Heartbeat.InitialDelay
+    pubsub.GossipSubHeartbeatInterval = cfg.Heartbeat.Interval
 
     ps, err := pubsub.NewGossipSub(ctx, host, pubsub.WithEventTracer(tracer))//, opts...)
     if err != nil {
