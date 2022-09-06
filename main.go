@@ -11,6 +11,7 @@ import (
     mrand "math/rand"
     // "log/syslog"
     "os"
+    "time"
 
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
@@ -81,10 +82,10 @@ func main() {
     dscore := flag.Int("dscore", 4, "When prunning the mesh for oversubscription, keep this many highest-scoring peers. Default 4")
     dlazy := flag.Int("dlazy", 8, "Minimum number of peers to gossip to. Default 8")
     dout := flag.Int("dout", 2, "When pruning the mesh for oversubscription, keep this many outbound connected peers. Default 2")
-    gossipFactor := flag.Bool("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
+    gossipFactor := flag.Float("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
 
-    InitialDelay := flag.Bool("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
-    Interval := flag.Bool("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
+    InitialDelay := flag.Float("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
+    Interval := flag.Float("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
 
     //GS parameters
     op := OverlayParams{
