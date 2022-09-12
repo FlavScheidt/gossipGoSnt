@@ -7,10 +7,10 @@ import (
     "encoding/json"
     "log"
 
-    pubsub "github.com/FlavScheidt/go-libp2p-pubsub"
+    pubsub "github.com/libp2p/go-libp2p-pubsub"
     "github.com/libp2p/go-libp2p-core/peer"
 
-    pb "github.com/libp2p/gossipGoSnt/proto"
+    pb "github.com/FlavScheidt/gossipGoSnt/proto"
     // "google.golang.org/grpc"
 )
 
