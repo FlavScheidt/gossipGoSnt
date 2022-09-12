@@ -7,7 +7,7 @@ import (
 
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
-    pb "github.com/FlavScheidt/gossipGoSnt/proto"
+    pb "github.com/libp2p/gossipGoSnt/proto"
 
 
     // proto "github.com/golang/protobuf/proto"
