@@ -9,7 +9,7 @@ import (
 
     "google.golang.org/grpc"
     // "google.golang.org/grpc/credentials/insecure"
-    pb "github.com/libp2p/gossipGoSnt/proto"
+    pb "github.com/FlavScheidt/gossipGoSnt/proto"
 
     // proto "github.com/golang/protobuf/proto"
     // protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -17,6 +17,7 @@ import (
     // reflect "reflect"
     // sync "sync"
 )
+
 
 
 // server is used to implement helloworld.GreeterServer.
