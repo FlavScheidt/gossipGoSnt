@@ -2,7 +2,9 @@ package main
 
 import (
     "context"
-    // "fmt"
+    "fmt"
+    "ioutils"
+    "string"
     // "os"
     "encoding/json"
     "log"
@@ -196,7 +198,7 @@ func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
     if err != nil {
         log.Fatal(err)
     }
-    thisNode.name =  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
+    node=  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
 
     for {
         msg, err := cr.sub.Next(cr.ctx)
@@ -217,15 +219,15 @@ func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
         cr.Messages <- cm
         m := <-cr.Messages
         // Log format is "time | node name| handler | received/sent | orign/destination | data"
-        log.Printf("| %s | GossipSub | Recieved | GossipSub | %v | %v | %v|  %v | %v \n", nodeName, cr.name, msg.ReceivedFrom, m.SenderName, m.Hash, m.Validator_Key)
+        log.Printf("| %s | GossipSub | Recieved | GossipSub | %v | %v | %v|  %v | %v \n", node, cr.name, msg.ReceivedFrom, m.SenderName, m.Hash, m.Validator_Key)
 
         //Send to rippled
         _, err = gRPCclient.ToRippled(cr.ctx, &pb.Gossip{Message: m.Message, Validator_Key: m.Validator_Key, Hash: m.Hash})
         if err != nil {
-            log.Fatalf("%s Error when calling ToRippled: %s", nodeName, err)
+            log.Fatalf("%s Error when calling ToRippled: %s", node, err)
         }
         // Log format is "time | node name | handler | received/sent | orign/destination | data"
-        log.Printf(" | %s | gRPC-Client | Sent | Rippled | %v | %v \n", nodeName, m.Hash, m.Validator_Key)
+        log.Printf(" | %s | gRPC-Client | Sent | Rippled | %v | %v \n", node, m.Hash, m.Validator_Key)
     }
 }
 
