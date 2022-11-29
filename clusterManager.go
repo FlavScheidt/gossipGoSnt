@@ -113,8 +113,7 @@ func newNode(experiment string)(nodeInfo) {
                 }
             }
         }
-    }
-    else if experiment == "validator" {
+    } else if experiment == "validator" {
         unlFile := thisNode.name 
 
         unl, err := os.Open("/root/gossipGoSnt/clusterConfig/validator/"+unlFile+".txt")
