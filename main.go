@@ -67,6 +67,8 @@ func main() {
             log.Println("Experiment: One topic per validator")
         case "unl":
             log.Println("Experiment: One topic per UNL")
+        case "small":
+            log.Println("Experiment: Pne topic for everyone. Size small")
         default:
             log.Println("Experiment type not recognized. Shutting down")
             return
@@ -187,6 +189,20 @@ func main() {
             panic(err)
         }
         log.Println("Joined topic for ", nodeTopic.name)
+
+    case "small":
+
+        //Create peerInfo for everything
+        validationsTopic    := peerInfo{name:"validations", id:0, ip: ""}
+        // proposalsTopic      = peerInfo{name: "proposals", id: 0, ip: ""}
+
+        nodeTopic, err = Subscribe(ctx, ps, c, host.ID(), validationsTopic)
+        publishingTopics = append(publishingTopics, nodeTopic)
+        if err != nil {
+            panic(err)
+        }
+        log.Println("Joined topic for ", nodeTopic.name)
+
 
     case "validator":
         var topicsList []*Topic

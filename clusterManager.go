@@ -46,9 +46,16 @@ func newNode(experiment string)(nodeInfo) {
     thisNode.name =  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
 
     //get node id from clusterConfig.csv
-    clusterConfig, err := os.Open("./clusterConfig.csv")
-    if err != nil {
-        log.Fatal(err)
+    if experiment == "small" {
+        clusterConfig, err := os.Open("./clusterConfigSmall.csv")
+        if err != nil {
+            log.Fatal(err)
+        }
+    } else {
+        clusterConfig, err := os.Open("./clusterConfig.csv")
+        if err != nil {
+            log.Fatal(err)
+        }
     }
     // defer clusterConfig.Close()
 
@@ -69,7 +76,45 @@ func newNode(experiment string)(nodeInfo) {
     }
 
     //Creates list of peers
-    if experiment == "validator" {
+    if experiment == "small" {
+        unlFile := thisNode.name 
+
+        unl, err := os.Open("//root/rippledTools/ConfigCluster/unl/fullySmall/"+unlFile+".txt")
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer unl.Close()
+        scanner = bufio.NewScanner(unl)
+            if err := scanner.Err(); err != nil {
+            log.Fatal(err)
+        }
+
+        for scanner.Scan() {
+            thisNode.peersList = append(thisNode.peersList, peerInfo{strings.TrimSpace(scanner.Text()), "", 0})
+        }
+
+        //Inserts info about every peer in the list
+        for j := 0; j<len(thisNode.peersList); j++ {
+            searchString := ","+thisNode.peersList[j].name+","
+            clusterConfig, err := os.Open("./clusterConfigSmall.csv")
+            if err != nil {
+                log.Fatal(err)
+            }
+            scanner = bufio.NewScanner(clusterConfig)
+            if err := scanner.Err(); err != nil {
+                log.Fatal(err)
+            }
+
+            for scanner.Scan() {
+                if strings.Contains(scanner.Text(), searchString) {
+                    dataExtract := strings.Split(scanner.Text(), ",")
+                    thisNode.peersList[j].id, err = strconv.Atoi(dataExtract[2])
+                    thisNode.peersList[j].ip = dataExtract[0]
+                }
+            }
+        }
+    }
+    else if experiment == "validator" {
         unlFile := thisNode.name 
 
         unl, err := os.Open("/root/gossipGoSnt/clusterConfig/validator/"+unlFile+".txt")
