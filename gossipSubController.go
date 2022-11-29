@@ -198,7 +198,7 @@ func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
     if err != nil {
         log.Fatal(err)
     }
-    node=  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
+    node :=  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
 
     for {
         msg, err := cr.sub.Next(cr.ctx)
