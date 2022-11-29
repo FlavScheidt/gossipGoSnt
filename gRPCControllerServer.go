@@ -6,6 +6,8 @@ import (
     "net"
     "context"
     // "time"
+        "io/ioutil"
+    "strings"
 
     "google.golang.org/grpc"
     // "google.golang.org/grpc/credentials/insecure"
@@ -27,13 +29,19 @@ type server struct {
 
 
 func (s *server) ToLibP2P(ctx context.Context, in *pb.Gossip) (*pb.Control, error) {
+
+    nodeName, err := ioutil.ReadFile("/etc/hostname")
+    if err != nil {
+        log.Fatal(err)
+    }
+    node :=  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
     // Log format is "time | handler | received/sent | orign/destination | data"
-    log.Printf("| gRPC-Server | Received | Rippled | %v | %v \n", in.GetHash(), in.GetValidator_Key())
+    log.Printf(" | %s | gRPC-Server | Received | Rippled | %v | %v \n", node, in.GetHash(), in.GetValidator_Key())
 
     //Send message to gossipsub
      for i := 0; i<len(publishingTopics); i++ {
         publishingTopics[i].Publish(in.GetMessage(), in.GetValidator_Key(), in.GetHash())   
-        log.Println("Message published on topic", publishingTopics[i].name)
+        log.Println("%s: Message published on topic", node, publishingTopics[i].name)
     } 
 
     return &pb.Control{Stream: true}, nil
