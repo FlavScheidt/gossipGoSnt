@@ -46,7 +46,7 @@ func newNode(experiment string)(nodeInfo) {
     thisNode.name =  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
 
     //get node id from clusterConfig.csv
-    fileNameConfig := "./clusterConfigSmall.csv"
+    fileNameConfig := "./clusterConfig.csv"
     if experiment == "small" {
         fileNameConfig = "./clusterConfigSmall.csv"
     }
@@ -77,7 +77,7 @@ func newNode(experiment string)(nodeInfo) {
     if experiment == "small" {
         unlFile := thisNode.name 
 
-        unl, err := os.Open("//root/rippledTools/ConfigCluster/unl/fullySmall/"+unlFile+".txt")
+        unl, err := os.Open("/root/rippledTools/ConfigCluster/unl/fullySmall/"+unlFile+".txt")
         if err != nil {
             log.Fatal(err)
         }
