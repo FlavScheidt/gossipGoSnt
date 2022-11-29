@@ -191,6 +191,13 @@ func (cr *Topic) ListPeers() []peer.ID {
 
 // readLoop pulls messages from the pubsub topic and pushes them onto the Messages channel.
 func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
+    
+    nodeName, err := ioutil.ReadFile("/etc/hostname")
+    if err != nil {
+        log.Fatal(err)
+    }
+    thisNode.name =  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
+
     for {
         msg, err := cr.sub.Next(cr.ctx)
         if err != nil {
@@ -209,17 +216,16 @@ func (cr *Topic) readLoop(gRPCclient pb.GossipMessageClient) {
         // send valid messages onto the Messages channel
         cr.Messages <- cm
         m := <-cr.Messages
-        // Log format is "time | handler | received/sent | orign/destination | data"
-        log.Printf("| GossipSub | Recieved | GossipSub | %v | %v | %v|  %v | %v \n", cr.name, msg.ReceivedFrom, m.SenderName, m.Hash, m.Validator_Key)
+        // Log format is "time | node name| handler | received/sent | orign/destination | data"
+        log.Printf("| %s | GossipSub | Recieved | GossipSub | %v | %v | %v|  %v | %v \n", nodeName, cr.name, msg.ReceivedFrom, m.SenderName, m.Hash, m.Validator_Key)
 
         //Send to rippled
         _, err = gRPCclient.ToRippled(cr.ctx, &pb.Gossip{Message: m.Message, Validator_Key: m.Validator_Key, Hash: m.Hash})
         if err != nil {
-            log.Fatalf("Error when calling ToRippled: %s", err)
+            log.Fatalf("%s Error when calling ToRippled: %s", nodeName, err)
         }
-        // Log format is "time | handler | received/sent | orign/destination | data"
-                // Log format is "time | handler | received/sent | orign/destination | data"
-        log.Printf("| gRPC-Client | Sent | Rippled | %v | %v \n", m.Hash, m.Validator_Key)
+        // Log format is "time | node name | handler | received/sent | orign/destination | data"
+        log.Printf(" | %s | gRPC-Client | Sent | Rippled | %v | %v \n", nodeName, m.Hash, m.Validator_Key)
     }
 }
 
