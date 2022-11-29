@@ -46,16 +46,14 @@ func newNode(experiment string)(nodeInfo) {
     thisNode.name =  strings.TrimSpace(fmt.Sprintf("%s",nodeName))
 
     //get node id from clusterConfig.csv
+    fileNameConfig := "./clusterConfigSmall.csv"
     if experiment == "small" {
-        clusterConfig, err := os.Open("./clusterConfigSmall.csv")
-        if err != nil {
-            log.Fatal(err)
-        }
-    } else {
-        clusterConfig, err := os.Open("./clusterConfig.csv")
-        if err != nil {
-            log.Fatal(err)
-        }
+        fileNameConfig = "./clusterConfigSmall.csv"
+    }
+
+    clusterConfig, err := os.Open(fileNameConfig)
+    if err != nil {
+        log.Fatal(err)
     }
     // defer clusterConfig.Close()
 
