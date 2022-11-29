@@ -43,6 +43,65 @@ type Message struct {
     SenderName      string
 }
 
+//Extracted from gossipsub-hardening
+// type PubsubNode struct {
+//     cfg      NodeConfig
+//     ctx      context.Context
+//     // shutdown func()
+//     // runenv   *runtime.RunEnv
+//     h        host.Host
+//     ps       *pubsub.PubSub
+
+//     lk     sync.RWMutex
+//     // topics map[string]*topicState
+
+//     pubwg sync.WaitGroup
+// }
+
+type NodeConfig struct {
+    // topics to join when node starts
+    // Topics []TopicConfig
+
+    // whether we're a publisher or a lurker
+    // Publisher bool
+
+    // pubsub event tracer
+    Tracer pubsub.EventTracer
+
+    // Test instance identifier
+    // Seq int64
+
+    // How long to wait after connecting to bootstrap peers before publishing
+    // Warmup time.Duration
+
+    // How long to wait for cooldown
+    // Cooldown time.Duration
+
+    // Gossipsub heartbeat params
+    Heartbeat HeartbeatParams
+
+    // whether to flood the network when publishing our own messages.
+    // Ignored unless hardening_api build tag is present.
+    // FloodPublishing bool
+
+    // Params for peer scoring function. Ignored unless hardening_api build tag is present.
+    // PeerScoreParams ScoreParams
+
+    OverlayParams OverlayParams
+
+    // Params for inspecting the scoring values.
+    // PeerScoreInspect InspectParams
+
+    // Size of the pubsub validation queue.
+    // ValidateQueueSize int
+
+    // Size of the pubsub outbound queue.
+    // OutboundQueueSize int
+
+    // Heartbeat tics for opportunistic grafting
+    // OpportunisticGraftTicks int
+}
+
 // Subscribe tries to subscribe to the PubSub topic for the room name, returning
 // a ChatRoom on success.
 func Subscribe(ctx context.Context, ps *pubsub.PubSub, gRPCclient pb.GossipMessageClient, selfID peer.ID, peerTopic peerInfo) (*Topic, error) {

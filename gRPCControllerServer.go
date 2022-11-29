@@ -19,6 +19,7 @@ import (
 )
 
 
+
 // server is used to implement helloworld.GreeterServer.
 type server struct {
     pb.UnimplementedGossipMessageServer

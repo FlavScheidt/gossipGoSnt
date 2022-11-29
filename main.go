@@ -11,6 +11,7 @@ import (
     mrand "math/rand"
     // "log/syslog"
     "os"
+    "time"
 
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
@@ -44,6 +45,7 @@ func main() {
 
     mw := io.MultiWriter(os.Stdout, logFile)
     log.SetOutput(mw)
+    log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
     // -----------------------------------------
     //      Create Context
@@ -55,9 +57,24 @@ func main() {
     //      Get the command line arguments
     //          We need to know which kind of experiment to run
     //          Here we just verify if the arguments are correct
+    //
+    //          We also get parameters for the gossipsub tests
     // -----------------------------------------
     experimentType := flag.String("type", "", "Type of experiment. Default is empty, shuts down")
+
+    d := flag.Int("d", 8, "Target peers in the mesh. Default 8")
+    dlo := flag.Int("dlo", 6, "Finds more peers bellow this value. Default 6")
+    dhi := flag.Int("dhi", 12, "Remove peers above this value. Default 12")
+    dscore := flag.Int("dscore", 4, "When prunning the mesh for oversubscription, keep this many highest-scoring peers. Default 4")
+    dlazy := flag.Int("dlazy", 8, "Minimum number of peers to gossip to. Default 8")
+    dout := flag.Int("dout", 2, "When pruning the mesh for oversubscription, keep this many outbound connected peers. Default 2")
+    gossipFactor := flag.Float64("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
+
+    InitialDelay := flag.Duration("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
+    Interval := flag.Duration("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
+
     flag.Parse()
+
 
     log.Println(strings.ToLower(*experimentType))
     switch strings.ToLower(*experimentType) {
@@ -73,6 +90,34 @@ func main() {
             log.Println("Experiment type not recognized. Shutting down")
             return
     }
+
+    //GS parameters
+    op := OverlayParams{
+        d:            *d,
+        dlo:          *dlo,
+        dhi:          *dhi,
+        dscore:       *dscore,
+        dlazy:        *dlazy,
+        dout:         *dout,
+        gossipFactor: *gossipFactor,
+    }
+
+    hb := HeartbeatParams{
+            InitialDelay: *InitialDelay,
+            Interval:     *Interval,
+    }
+
+      
+    log.Println("d = ", d)
+    log.Println("dlo = ", dlo)
+    log.Println("dhi = ", dhi)
+    log.Println("dscore = ", dscore)
+    log.Println("dlazy = ", dlazy)
+    log.Println("dout = ", dout)
+    log.Println("gossipFactor = ", gossipFactor)
+    log.Println("InitialDelay = ", InitialDelay)
+    log.Println("Interval = ", Interval)
+
 
     // -----------------------------------------
     //      Create LibP2P node
@@ -137,12 +182,59 @@ func main() {
       panic(err)
     }
 
+    //GossipSub Parameters
+    cfg := NodeConfig{
+        OverlayParams:           op,
+        // Tracer:                  tracer,
+        Heartbeat:               hb,
+    }
 
-    ps, err := pubsub.NewGossipSub(ctx, host, pubsub.WithEventTracer(tracer))
+    //GossipSub parameters
+    // opts, err := pubsubOptions(cfg)
+    // if err != nil {
+    //     return nil, err
+    // }
+
+     // Set the overlay parameters
+    if cfg.OverlayParams.d >= 0 {
+        pubsub.GossipSubD = cfg.OverlayParams.d
+    }
+    if cfg.OverlayParams.dlo >= 0 {
+        pubsub.GossipSubDlo = cfg.OverlayParams.dlo
+    }
+    if cfg.OverlayParams.dhi >= 0 {
+        pubsub.GossipSubDhi = cfg.OverlayParams.dhi
+    }
+    if cfg.OverlayParams.dscore >= 0 {
+        pubsub.GossipSubDscore = cfg.OverlayParams.dscore
+    }
+    if cfg.OverlayParams.dlazy >= 0 {
+        pubsub.GossipSubDlazy = cfg.OverlayParams.dlazy
+    }
+    if cfg.OverlayParams.dout >= 0 {
+        pubsub.GossipSubDout = cfg.OverlayParams.dout
+    }
+    if cfg.OverlayParams.gossipFactor > 0 {
+        pubsub.GossipSubGossipFactor = cfg.OverlayParams.gossipFactor
+    }
+
+    //Set Heartbeat parameters
+    pubsub.GossipSubHeartbeatInitialDelay = cfg.Heartbeat.InitialDelay
+    pubsub.GossipSubHeartbeatInterval = cfg.Heartbeat.Interval
+
+    ps, err := pubsub.NewGossipSub(ctx, host, pubsub.WithEventTracer(tracer))//, opts...)
     if err != nil {
         panic(err)
     }
     log.Println("GossipSub service created")
+
+    // p := PubsubNode{
+    //     cfg:      cfg,
+    //     ctx:      ctx,
+    //     h:        h,
+    //     ps:       ps,
+    // }
+    // log.Println("GossipSub node created")
 
     // -----------------------------------------
     //      gRPC Client
