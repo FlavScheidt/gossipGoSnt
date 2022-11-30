@@ -108,15 +108,15 @@ func main() {
     }
 
       
-    log.Println("d = ", d)
-    log.Println("dlo = ", dlo)
-    log.Println("dhi = ", dhi)
-    log.Println("dscore = ", dscore)
-    log.Println("dlazy = ", dlazy)
-    log.Println("dout = ", dout)
-    log.Println("gossipFactor = ", gossipFactor)
-    log.Println("InitialDelay = ", InitialDelay)
-    log.Println("Interval = ", Interval)
+    log.Println("d = ", *d)
+    log.Println("dlo = ", *dlo)
+    log.Println("dhi = ", *dhi)
+    log.Println("dscore = ", *dscore)
+    log.Println("dlazy = ", *dlazy)
+    log.Println("dout = ", *dout)
+    log.Println("gossipFactor = ", *gossipFactor)
+    log.Println("InitialDelay = ", *InitialDelay)
+    log.Println("Interval = ", *Interval)
 
 
     // -----------------------------------------
