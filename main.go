@@ -195,7 +195,7 @@ func main() {
       panic(err)
     }
 
-    tracer, err := pubsub.NewRemoteTracer(ctx, host, pi)
+    tracer, err := pubsub.NewRemoteTracer(ctx, host, *pi)
     if err != nil {
       panic(err)
     }
