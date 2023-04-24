@@ -190,12 +190,12 @@ func main() {
     // }
 
     // assuming that your tracer runs in x.x.x.x and has a peer ID of QmTracer
-    pi, err := peer.AddrInfoFromP2pAddr(ma.StringCast("/ip4/"+gsTraceIP+"/tcp/"+gsTracePort+"/p2p/QmTracer"))
-    if err != nil {
-      panic(err)
-    }
+    // pi, err := peer.AddrInfoFromP2pAddr(ma.StringCast("/ip4/"+gsTraceIP+"/tcp/"+gsTracePort+"/p2p/QmTracer"))
+    // if err != nil {
+    //   panic(err)
+    // }
 
-    tracer, err := pubsub.NewRemoteTracer(ctx, host, pi)
+    tracer, err := pubsub.NewRemoteTracer(ctx, host, peer.AddrInfoFromP2pAddr(ma.StringCast("/ip4/"+gsTraceIP+"/tcp/"+gsTracePort+"/p2p/QmTracer")))
     if err != nil {
       panic(err)
     }
