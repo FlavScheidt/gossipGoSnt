@@ -25,6 +25,8 @@ import (
 // -----------------------------------------
 const gRPCportServer = "50051"
 const sourcePort = 45511 //for libp2p
+const gsTracePort = "4001"
+const gsTraceIP = "192.168.20.58"
 
 //Global, because I cannot modify the toRippled function
 var nodeTopic *Topic
@@ -177,7 +179,20 @@ func main() {
     log.Println("------------------------------------------------------------------")
 
     //Create new GossipSub instance
-    tracer, err := pubsub.NewJSONTracer("./trace.json")
+
+    //Local Event tracer (JSON)
+    // tracer, err := pubsub.NewJSONTracer("./trace.json")
+    // if err != nil {
+    //   panic(err)
+    // }
+
+    // assuming that your tracer runs in x.x.x.x and has a peer ID of QmTracer
+    pi, err := peer.AddrInfoFromP2pAddr(ma.StringCast("/ip4/"+gsTraceIP+"/tcp/"+gsTracePort+"/p2p/QmTracer"))
+    if err != nil {
+      panic(err)
+    }
+
+    tracer, err := pubsub.NewRemoteTracer(ctx, host, pi)
     if err != nil {
       panic(err)
     }
