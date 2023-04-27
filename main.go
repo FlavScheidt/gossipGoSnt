@@ -18,8 +18,8 @@ import (
     pb "github.com/FlavScheidt/gossipGoSnt/proto"
     pubsub "github.com/libp2p/go-libp2p-pubsub"
 
-    peer "github.com/libp2p/go-libp2p/core/peer"
-    ma "github.com/multiformats/go-multiaddr"
+    // peer "github.com/libp2p/go-libp2p/core/peer"
+    // ma "github.com/multiformats/go-multiaddr"
 )
 
 
