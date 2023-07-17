@@ -75,10 +75,16 @@ func main() {
     dout := flag.Int("dout", 2, "When pruning the mesh for oversubscription, keep this many outbound connected peers. Default 2")
     gossipFactor := flag.Float64("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
 
-    InitialDelay := flag.Duration("InitialDelay", 100 * time.Millisecond, "Heatbeat Initial delay. Default 0,1s")
-    Interval := flag.Duration("Interval", 1 * time.Second, "Heartbeat interval. Default 1s")
+    InitialDelay := flag.Int("initialDelay", 100 , "Heatbeat Initial delay. Default 0,1s")
+    Interval := flag.Int("interval", 1, "Heartbeat interval. Default 1s")
 
     flag.Parse()
+
+    intv := time.Duration(*Interval)
+    intD := time.Duration(*InitialDelay)
+
+    interval    := intv*time.Second
+    initialDelay:= intD*time.Millisecond
 
 
     log.Println(strings.ToLower(*experimentType))
@@ -105,11 +111,8 @@ func main() {
         dlazy:        *dlazy,
         dout:         *dout,
         gossipFactor: *gossipFactor,
-    }
-
-    hb := HeartbeatParams{
-            InitialDelay: *InitialDelay,
-            Interval:     *Interval,
+        initialDelay: initialDelay,
+        interval:     interval,
     }
 
       
@@ -120,8 +123,8 @@ func main() {
     log.Println("dlazy = ", *dlazy)
     log.Println("dout = ", *dout)
     log.Println("gossipFactor = ", *gossipFactor)
-    log.Println("InitialDelay = ", *InitialDelay)
-    log.Println("Interval = ", *Interval)
+    log.Println("InitialDelay = ", initialDelay)
+    log.Println("Interval = ", interval)
 
 
     // -----------------------------------------
@@ -204,7 +207,7 @@ func main() {
     cfg := NodeConfig{
         OverlayParams:           op,
         // Tracer:                  tracer,
-        Heartbeat:               hb,
+        // Heartbeat:               hb,
     }
 
     //GossipSub parameters
@@ -237,8 +240,8 @@ func main() {
     }
 
     //Set Heartbeat parameters
-    pubsub.GossipSubHeartbeatInitialDelay = cfg.Heartbeat.InitialDelay
-    pubsub.GossipSubHeartbeatInterval = cfg.Heartbeat.Interval
+    pubsub.GossipSubHeartbeatInitialDelay = cfg.OverlayParams.initialDelay
+    pubsub.GossipSubHeartbeatInterval = cfg.OverlayParams.interval
 
     ps, err := pubsub.NewGossipSub(ctx, host, pubsub.WithEventTracer(tracer))//, opts...)
     if err != nil {

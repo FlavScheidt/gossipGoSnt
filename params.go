@@ -15,10 +15,10 @@ import (
 )
 
 
-type HeartbeatParams struct {
-	InitialDelay time.Duration
-	Interval     time.Duration
-}
+// type HeartbeatParams struct {
+// 	InitialDelay time.Duration
+// 	Interval     time.Duration
+// }
 
 
 type OverlayParams struct {
@@ -29,6 +29,8 @@ type OverlayParams struct {
 	dlazy        int
 	dout         int
 	gossipFactor float64
+	initialDelay time.Duration
+	interval     time.Duration
 }
 
 

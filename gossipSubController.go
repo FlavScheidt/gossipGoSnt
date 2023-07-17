@@ -80,7 +80,7 @@ type NodeConfig struct {
     // Cooldown time.Duration
 
     // Gossipsub heartbeat params
-    Heartbeat HeartbeatParams
+    // Heartbeat HeartbeatParams
 
     // whether to flood the network when publishing our own messages.
     // Ignored unless hardening_api build tag is present.
@@ -104,8 +104,6 @@ type NodeConfig struct {
     // OpportunisticGraftTicks int
 }
 
-// Subscribe tries to subscribe to the PubSub topic for the room name, returning
-// a ChatRoom on success.
 func Subscribe(ctx context.Context, ps *pubsub.PubSub, gRPCclient pb.GossipMessageClient, selfID peer.ID, peerTopic peerInfo) (*Topic, error) {
     // join the pubsub topic
     topic, err := ps.Join(topicName(peerTopic.name))
