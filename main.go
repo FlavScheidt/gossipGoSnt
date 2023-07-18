@@ -75,16 +75,16 @@ func main() {
     dout := flag.Int("dout", 2, "When pruning the mesh for oversubscription, keep this many outbound connected peers. Default 2")
     gossipFactor := flag.Float64("gossipFactor", 0.25, "The factor of peers to gossip to during a round. With d_lazy as a minimum. Default 0.25")
 
-    InitialDelay := flag.Int("initialDelay", 100 , "Heatbeat Initial delay. Default 0,1s")
-    Interval := flag.Int("interval", 1, "Heartbeat interval. Default 1s")
+    initialDelay := flag.Float64("initialDelay", 100 , "Heatbeat Initial delay. Default 0,1s")
+    interval := flag.Float64("interval", 1, "Heartbeat interval. Default 1s")
 
     flag.Parse()
 
-    intv := time.Duration(*Interval)
-    intD := time.Duration(*InitialDelay)
+    intv := time.Duration(*interval)
+    intD := time.Duration(*initialDelay)
 
-    interval    := intv*time.Second
-    initialDelay:= intD*time.Millisecond
+    Interval    := intv*time.Second
+    InitialDelay:= intD*time.Millisecond
 
 
     log.Println(strings.ToLower(*experimentType))
@@ -111,8 +111,8 @@ func main() {
         dlazy:        *dlazy,
         dout:         *dout,
         gossipFactor: *gossipFactor,
-        initialDelay: initialDelay,
-        interval:     interval,
+        initialDelay: InitialDelay,
+        interval:     Interval,
     }
 
       
@@ -123,8 +123,8 @@ func main() {
     log.Println("dlazy = ", *dlazy)
     log.Println("dout = ", *dout)
     log.Println("gossipFactor = ", *gossipFactor)
-    log.Println("InitialDelay = ", initialDelay)
-    log.Println("Interval = ", interval)
+    log.Println("InitialDelay = ", InitialDelay)
+    log.Println("Interval = ", Interval)
 
 
     // -----------------------------------------
